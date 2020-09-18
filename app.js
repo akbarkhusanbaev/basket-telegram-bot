@@ -17,7 +17,7 @@ mongoose.connect(config.db, {
 
 const User = require('./models/User')
 const Products = require('./models/Product')
-
+const History = require('./models/History')
 
 bot.on('message', async msg => {
     const chatId = msg.from.id
@@ -125,12 +125,33 @@ ID: ${p.id}
 Добавлен: ${p.date}`
         }).join('\n==================\n')
         await bot.sendMessage(chatId, 'Вы успешно купили товар')
-        await bot.sendMessage(admin, `Пользователь ${user.first_name} (${user.chatId}) купил товары:
+        await bot.sendMessage(admin, `Пользователь ${user.first_name} (${chatId}) купил товары:
 ${prodsList}`)
+
+        const bs = user.basket
+
+        await bs.map(async p => {
+            const history = new History({
+                name: p.name,
+                price: p.price,
+                date: Date.now(),
+                owner: chatId,
+                id: p.id
+            })
+            await history.save()
+            return bot.sendMessage(config.opsHistory, `
+Товар: ${history.name}
+Цена: ${history.price}
+Совершена покупка: ${history.date}
+Покупатель: ${history.owner}
+ID: ${history.id}
+            `)
+        })
+
         setTimeout(() => {
             user.basket = []
             user.save()
-        }, 300)
+        }, 500)
     }
 
 })
