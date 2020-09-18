@@ -180,33 +180,12 @@ bot.onText(/\/start (.+)/, async (msg, [any, match]) => {
     }
 })
 
-bot.onText(/\/stats (.+)/, async (msg, [any, match]) => {
+bot.onText(/\/stats/, async msg => {
     const users = await User.find()
-    const oneUser = await User.findOne({chatId: match})
     if (msg.from.id === admin) {
-        if (match === 'all') {
-            return bot.sendMessage(admin, `
+        return bot.sendMessage(admin, `
 Всего пользователей: ${users.length}
-            `)
-        }
-
-        if (oneUser) {
-            const card = oneUser.basket.map(p => {
-                return `
-Товар: ${p.name}
-Цена: ${p.price}p.
-Добавил в корзину: ${p.date}
-ID: ${p.id}
-                `
-            }).join('\n============\n')
-            return bot.sendMessage(admin, `
-Пользователь: ${oneUser.chatId}
-Имя: ${oneUser.first_name}
-Корзина: 
-${card}
-            `)
-        }
-
+        `)
     }
 })
 
