@@ -7,9 +7,7 @@ const bot = new TelegramBot(config.token, {polling: true})
 
 mongoose.connect(config.db, {
     useNewUrlParser: true,
-    useUnifiedTopology: true,
-    useCreateIndex: true,
-    useFindAndModify: false
+    useUnifiedTopology: true
 }, err => {
     if (err) console.log(err)
     else console.log('connected')
